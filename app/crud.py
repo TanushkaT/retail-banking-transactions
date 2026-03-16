@@ -1,6 +1,34 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 from datetime import datetime
+from sqlalchemy import func
+from . import models
+
+def get_file_summary(db: Session, batch_id: str):
+    """Calculates summary for a specific uploaded file."""
+    return db.query(
+        func.count(models.Transaction.transaction_id).label("total_transactions"),
+        func.sum(models.Transaction.amount).label("total_amount"),
+        func.count(func.distinct(models.Account.customer_id)).label("unique_customers")
+    ).filter(models.Transaction.batch_id == batch_id).first()
+
+def get_overall_summary(db: Session):
+    """Calculates global summary across all uploaded files."""
+    stats = db.query(
+        func.count(models.Transaction.transaction_id).label("total_txns"),
+        func.sum(models.Transaction.amount).label("total_volume")
+    ).first()
+
+    top_merchants = db.query(
+        models.Transaction.merchant, 
+        func.sum(models.Transaction.amount).label("spent")
+    ).group_by(models.Transaction.merchant).order_by(func.sum(models.Transaction.amount).desc()).limit(5).all()
+
+    return {
+        "totals": stats,
+        "top_merchants": [{"name": m[0], "amount": m[1]} for m in top_merchants]
+    }
+
 
 def ingest_transaction_data(db: Session, data: schemas.CustomerBatch):
     # 1. Create a Batch record
