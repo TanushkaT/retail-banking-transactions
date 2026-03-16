@@ -1,20 +1,26 @@
-from .database import engine, Base
-from . import models
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from . import crud, schemas, models
+from .database import SessionLocal, engine
 
-# This creates the tables in PostgreSQL if they don't exist
+# Create tables
 models.Base.metadata.create_all(bind=engine)
-
-from fastapi import FastAPI, HTTPException
-from .schemas import CustomerBatch  # Import your new validation rules
 
 app = FastAPI()
 
+# Dependency to get DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.post("/upload-transactions/")
-async def upload_json(data: CustomerBatch):
-    # FastAPI automatically validates 'data' against CustomerBatch
-    # If the JSON is wrong, it returns a clear error to the user
-    return {
-        "status": "Success",
-        "message": f"Batch {data.batch_id} validated for Customer {data.customer_id}",
-        "record_count": sum(len(acc.transactions) for acc in data.accounts)
-    }
+def upload_json(data: schemas.CustomerBatch, db: Session = Depends(get_db)):
+    try:
+        batch_id = crud.ingest_transaction_data(db, data)
+        return {"status": "Success", "batch_processed": batch_id}
+    except Exception as e:
+        db.rollback() # Rollback if something goes wrong
+        raise HTTPException(status_code=400, detail=str(e))
