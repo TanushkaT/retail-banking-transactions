@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from . import crud, schemas, models
 from .database import SessionLocal, engine
 from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
@@ -45,3 +46,10 @@ def read_file_summary(batch_id: str, db: Session = Depends(get_db)):
 @app.get("/summaries/overall")
 def read_overall_summary(db: Session = Depends(get_db)):
     return crud.get_overall_summary(db)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, you'd specify your frontend URL
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
