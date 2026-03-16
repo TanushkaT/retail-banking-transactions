@@ -1,25 +1,12 @@
-from fastapi import FastAPI, UploadFile, File
-import json
+from flask import Flask, render_template
 
-app = FastAPI()
+app = Flask(__name__)
 
-@app.get("/")
+@app.route('/')
 def home():
-    return {"message": "Retail Banking API is running!"}
+    # This is where your SQL data will eventually go
+    user_data = {"name": "Tanushka", "balance": 5000} 
+    return render_template('index.html', user=user_data)
 
-@app.post("/ingest/")
-async def ingest_data(file: UploadFile = File(...)):
-    # 1. Read the uploaded JSON file
-    content = await file.read()
-    data = json.loads(content)
-    
-    # 2. Logic to loop through transactions
-    # In a real app, you'd use 'psycopg2' here to send data to PostgreSQL
-    batch_info = data.get("batch")
-    records_count = len(data.get("transactions", []))
-    
-    return {
-        "status": "Success",
-        "batch_processed": batch_info,
-        "total_records": records_count
-    }
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
