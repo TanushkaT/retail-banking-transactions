@@ -1,12 +1,14 @@
-from flask import Flask, render_template
+from fastapi import FastAPI, HTTPException
+from .schemas import CustomerBatch  # Import your new validation rules
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/')
-def home():
-    # This is where your SQL data will eventually go
-    user_data = {"name": "Tanushka", "balance": 5000} 
-    return render_template('index.html', user=user_data)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+@app.post("/upload-transactions/")
+async def upload_json(data: CustomerBatch):
+    # FastAPI automatically validates 'data' against CustomerBatch
+    # If the JSON is wrong, it returns a clear error to the user
+    return {
+        "status": "Success",
+        "message": f"Batch {data.batch_id} validated for Customer {data.customer_id}",
+        "record_count": sum(len(acc.transactions) for acc in data.accounts)
+    }
