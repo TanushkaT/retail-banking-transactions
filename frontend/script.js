@@ -9,8 +9,8 @@ async function loadDashboard() {
         document.getElementById('total-volume').innerText = `$${data.totals.total_volume.toFixed(2)}`;
 
         // 2. Prepare Chart Data
-        const labels = data.top_merchants.map(m => m.name[0]); // merchant name
-        const values = data.top_merchants.map(m => m.name[1]); // spent amount
+        const labels = data.top_merchants.map(m => m.name); // merchant name
+        const values = data.top_merchants.map(m => m.amount); // spent amount
 
         // 3. Render Chart
         const ctx = document.getElementById('merchantChart').getContext('2d');
