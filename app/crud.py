@@ -8,7 +8,7 @@ def get_file_summary(db: Session, batch_id: str):
     return db.query(
         func.count(models.Transaction.transaction_id).label("total_transactions"),
         func.sum(models.Transaction.amount).label("total_amount"),
-        func.count(func.distinct(models.Account.customer_id)).label("unique_customers")
+        func.count(func.distinct(models.Transaction.account_id)).label("unique_customers")
     ).filter(models.Transaction.batch_id == batch_id).first()
 
 def get_overall_summary(db: Session):
