@@ -1,7 +1,7 @@
 async function loadDashboard() {
     try {
         // Replace with your local FastAPI URL
-        const response = await fetch('http://127.0.0.1');
+        const response = await fetch('http://127.0.0.1:8000/summaries/overall');
         const data = await response.json();
 
         // 1. Update Metric Cards
