@@ -24,3 +24,15 @@ def upload_json(data: schemas.CustomerBatch, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback() # Rollback if something goes wrong
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/summaries/file/{batch_id}")
+def read_file_summary(batch_id: str, db: Session = Depends(get_db)):
+    summary = crud.get_file_summary(db, batch_id)
+    if not summary:
+        raise HTTPException(status_code=404, detail="Batch not found")
+    return summary
+
+@app.get("/summaries/overall")
+def read_overall_summary(db: Session = Depends(get_db)):
+    return crud.get_overall_summary(db)
+
