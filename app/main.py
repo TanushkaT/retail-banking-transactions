@@ -1,3 +1,9 @@
+from .database import engine, Base
+from . import models
+
+# This creates the tables in PostgreSQL if they don't exist
+models.Base.metadata.create_all(bind=engine)
+
 from fastapi import FastAPI, HTTPException
 from .schemas import CustomerBatch  # Import your new validation rules
 
