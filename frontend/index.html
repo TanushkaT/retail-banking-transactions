@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Banking Transaction Dashboard</title>
+    <script src="https://cdn.jsdelivr.net"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .stats-container { display: flex; gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex: 1; }
+        .chart-container { background: white; padding: 20px; border-radius: 8px; width: 600px; }
+    </style>
+</head>
+<body>
+    <h1>Retail Banking Overview</h1>
+    
+    <div class="stats-container">
+        <div class="card"><h3>Total Transactions</h3><p id="total-txns">0</p></div>
+        <div class="card"><h3>Total Volume</h3><p id="total-volume">$0.00</p></div>
+    </div>
+
+    <div class="chart-container">
+        <h3>Top Merchants</h3>
+        <canvas id="merchantChart"></canvas>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
